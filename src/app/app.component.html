@@ -1,24 +1,40 @@
-<div style="padding: 20px; font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
-  <h1>Tenant Frontend</h1>
+<div style="padding: 24px; font-family: Arial, sans-serif; max-width: 720px; margin: 0 auto;">
+  <h1 style="color: #1e293b; margin-bottom: 8px;">{{ title }}</h1>
+  <p style="color: #64748b; margin-top: 0;">Loaded from Global Portal redirect</p>
 
-  <!-- Auth status display -->
-  <div style="background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
-    <p style="margin: 4px 0;"><strong>User Email:</strong> {{ userEmail || 'Not signed in' }}</p>
-    <p style="margin: 4px 0;">
-      <strong>MSAL Token:</strong>
-      <span *ngIf="authToken" style="color: #16a34a; font-weight: bold;">✔ Active (attached to API calls)</span>
+  <!-- User & Token Status Card -->
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+    <h3 style="margin-top: 0; font-size: 16px; color: #334155;">Session Information</h3>
+    <p style="margin: 6px 0;"><strong>User Email:</strong> {{ userEmail || 'Not available' }}</p>
+    <p style="margin: 6px 0;">
+      <strong>Token Captured:</strong>
+      <span *ngIf="authToken" style="color: #16a34a; font-weight: bold;">✔ Yes (in SessionStorage)</span>
       <span *ngIf="!authToken" style="color: #dc2626; font-weight: bold;">✘ None</span>
     </p>
+    <button *ngIf="authToken" (click)="validateToken()" [disabled]="isLoading" style="margin-top: 10px; padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      {{ isLoading ? 'Validating...' : 'Re-validate Token' }}
+    </button>
   </div>
 
-  <h2>Posts List (API Call)</h2>
+  <!-- API Validation Result -->
+  <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+    <h3 style="margin-top: 0; font-size: 16px; color: #334155;">API Validation: /api/auth/validate</h3>
 
-  <div *ngIf="posts.length === 0">
-    <p>Loading posts...</p>
-  </div>
+    <div *ngIf="isLoading" style="color: #2563eb; padding: 12px 0;">
+      Validating token with backend API...
+    </div>
 
-  <div *ngFor="let post of posts" style="border-bottom: 1px solid #eee; padding: 12px 0;">
-    <h3 style="margin: 0 0 6px 0;">{{ post.title }}</h3>
-    <p style="margin: 0; color: #555;">{{ post.body }}</p>
+    <div *ngIf="errorMessage" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 12px; color: #991b1b; margin-top: 12px;">
+      <strong>Error:</strong> {{ errorMessage }}
+    </div>
+
+    <div *ngIf="validateResponse" style="margin-top: 12px;">
+      <p style="color: #16a34a; font-weight: bold; margin: 0 0 8px 0;">✔ Response received successfully:</p>
+      <pre style="background: #0f172a; color: #f8fafc; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 13px;">{{ validateResponse | json }}</pre>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && !validateResponse && !authToken" style="color: #64748b; padding: 12px 0;">
+      Waiting for token from portal redirect...
+    </div>
   </div>
 </div>

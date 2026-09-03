@@ -10,19 +10,22 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  title = 'tenant-frontend';
-  posts: any[] = [];
+  title = 'Tenant Frontend - Region 2';
   authToken: string | null = null;
   userEmail: string | null = null;
+  
+  validateResponse: any = null;
+  errorMessage: string | null = null;
+  isLoading = false;
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
-    // 1. Capture token from URL or session storage
+  ngOnInit(): void {
+    // 1. Capture token from the URL hash sent by redirectToApp()
     this.handleIncomingMsalToken();
 
-    // 2. Call API with the token attached
-    this.loadPosts();
+    // 2. Validate token against the backend API
+    this.validateToken();
   }
 
   handleIncomingMsalToken(): void {
@@ -32,7 +35,8 @@ export class AppComponent implements OnInit {
 
       const idToken = params.get('id_token');
       const accessToken = params.get('access_token');
-      const token = params.get('token') || idToken || accessToken;
+      // Prioritize id_token (contains user identity for custom backend)
+      const token = idToken || params.get('token') || accessToken;
       const user = params.get('user');
 
       if (token) {
@@ -41,9 +45,9 @@ export class AppComponent implements OnInit {
           sessionStorage.setItem('user_email', user);
         }
 
-        // Clean up URL hash so token isn't visible
+        // Clean up URL hash so token isn't visible in the browser address bar
         window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        console.log('Successfully captured MSAL token for user:', user);
+        console.log('Successfully captured token for user:', user);
       }
     }
 
@@ -51,15 +55,31 @@ export class AppComponent implements OnInit {
     this.userEmail = sessionStorage.getItem('user_email');
   }
 
-  loadPosts(): void {
-    // 3. Attach Bearer token to request headers if present
-    const headers = this.authToken
-      ? new HttpHeaders({ Authorization: `Bearer ${this.authToken}` })
-      : undefined;
+  validateToken(): void {
+    if (!this.authToken) {
+      console.warn('No token found to validate.');
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authToken}`
+    });
 
     this.http.get('https://sporapi2-d5emhxhyefdvfbhp.eastasia-01.azurewebsites.net/api/auth/validate', { headers })
-      .subscribe((data: any) => {
-        this.posts = data.slice(0, 10);
+      .subscribe({
+        next: (data: any) => {
+          this.isLoading = false;
+          this.validateResponse = data;
+          console.log('Token validated successfully:', data);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || err.statusText || 'Validation request failed';
+          console.error('Validation Error:', err);
+        }
       });
   }
 }
