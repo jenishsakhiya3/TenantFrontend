@@ -1,12 +1,24 @@
-<div style="padding: 20px; font-family: Arial, sans-serif;">
-  <h1>Posts List</h1>
+<div style="padding: 20px; font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+  <h1>Tenant Frontend</h1>
 
-  <div *ngIf="posts.length === 0">
-    <p>Loading...</p>
+  <!-- Auth status display -->
+  <div style="background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+    <p style="margin: 4px 0;"><strong>User Email:</strong> {{ userEmail || 'Not signed in' }}</p>
+    <p style="margin: 4px 0;">
+      <strong>MSAL Token:</strong>
+      <span *ngIf="authToken" style="color: #16a34a; font-weight: bold;">✔ Active (attached to API calls)</span>
+      <span *ngIf="!authToken" style="color: #dc2626; font-weight: bold;">✘ None</span>
+    </p>
   </div>
 
-  <div *ngFor="let post of posts" style="border-bottom: 1px solid #ddd; padding: 10px 0;">
-    <h3>{{ post.title }}</h3>
-    <p>{{ post.body }}</p>
+  <h2>Posts List (API Call)</h2>
+
+  <div *ngIf="posts.length === 0">
+    <p>Loading posts...</p>
+  </div>
+
+  <div *ngFor="let post of posts" style="border-bottom: 1px solid #eee; padding: 12px 0;">
+    <h3 style="margin: 0 0 6px 0;">{{ post.title }}</h3>
+    <p style="margin: 0; color: #555;">{{ post.body }}</p>
   </div>
 </div>
