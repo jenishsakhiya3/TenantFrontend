@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
       ? new HttpHeaders({ Authorization: `Bearer ${this.authToken}` })
       : undefined;
 
-    this.http.get('https://sportapi1-erhuehfwa7bpghd3.eastasia-01.azurewebsites.net', { headers })
+    this.http.get('https://sporapi2-d5emhxhyefdvfbhp.eastasia-01.azurewebsites.net', { headers })
       .subscribe((data: any) => {
         this.posts = data.slice(0, 10);
       });
