@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
       const idToken = params.get('id_token');
       const accessToken = params.get('access_token');
       // Prioritize id_token (contains user identity for custom backend)
-      const token = idToken || params.get('token') || accessToken;
+      const token = accessToken;
       const user = params.get('user');
 
       if (token) {
