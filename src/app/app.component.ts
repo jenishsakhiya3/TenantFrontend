@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
       Authorization: `Bearer ${this.authToken}`
     });
 
-    this.http.get('https://sportapi1-erhuehfwa7bpghd3.eastasia-01.azurewebsites.net/api/auth/validate', { headers })
+    this.http.get('https://be1-gpdkftfzacdnc4ac.eastasia-01.azurewebsites.net/api/auth/validate', { headers })
       .subscribe({
         next: (data: any) => {
           this.isLoading = false;
