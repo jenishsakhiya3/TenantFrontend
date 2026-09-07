@@ -12,6 +12,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class AppComponent implements OnInit {
   title = 'Tenant Frontend';
   accessToken: string | null = null;
+  authToken: string | null = null;
   IdToken: string | null = null;
   userEmail: string | null = null;
   

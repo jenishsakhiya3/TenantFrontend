@@ -11,7 +11,7 @@
       <span *ngIf="authToken" style="color: #16a34a; font-weight: bold;">✔ Yes (in SessionStorage)</span>
       <span *ngIf="!authToken" style="color: #dc2626; font-weight: bold;">✘ None</span>
     </p>
-    <button *ngIf="authToken" (click)="validateToken()" [disabled]="isLoading" style="margin-top: 10px; padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    <button *ngIf="authToken" (click)="validateAccessToken()" [disabled]="isLoading" style="margin-top: 10px; padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
       {{ isLoading ? 'Validating...' : 'Re-validate Token' }}
     </button>
   </div>
