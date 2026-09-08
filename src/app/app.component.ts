@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -72,7 +73,7 @@ export class AppComponent implements OnInit {
       Authorization: `Bearer ${this.accessToken}`
     });
 
-    this.http.get('https://be1-gpdkftfzacdnc4ac.eastasia-01.azurewebsites.net/api/auth/validate', { headers })
+    this.http.get(`${environment.backendUrl}`, { headers })
       .subscribe({
         next: (data: any) => {
           this.isLoading = false;
@@ -86,31 +87,31 @@ export class AppComponent implements OnInit {
         }
       });
   }
-  validateIdToken(): void {
-    if (!this.IdToken) {
-      console.warn('No token found to validate.');
-      return;
-    }
+  // validateIdToken(): void {
+  //   if (!this.IdToken) {
+  //     console.warn('No token found to validate.');
+  //     return;
+  //   }
 
-    this.isLoading = true;
-    this.errorMessage = null;
+  //   this.isLoading = true;
+  //   this.errorMessage = null;
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.IdToken}`
-    });
+  //   const headers = new HttpHeaders({
+  //     Authorization: `Bearer ${this.IdToken}`
+  //   });
 
-    this.http.get('https://be1-gpdkftfzacdnc4ac.eastasia-01.azurewebsites.net/api/auth/validate', { headers })
-      .subscribe({
-        next: (data: any) => {
-          this.isLoading = false;
-          this.validateResponse = data;
-          console.log('Token validated successfully:', data);
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = err.error?.message || err.statusText || 'Validation request failed';
-          console.error('Validation Error:', err);
-        }
-      });
-  }
+  //   this.http.get(`${environment.backendUrl}/api/auth/validate`, { headers })
+  //     .subscribe({
+  //       next: (data: any) => {
+  //         this.isLoading = false;
+  //         this.validateResponse = data;
+  //         console.log('Token validated successfully:', data);
+  //       },
+  //       error: (err) => {
+  //         this.isLoading = false;
+  //         this.errorMessage = err.error?.message || err.statusText || 'Validation request failed';
+  //         console.error('Validation Error:', err);
+  //       }
+  //     });
+  // }
 }
