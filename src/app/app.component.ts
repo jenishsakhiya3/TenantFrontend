@@ -27,8 +27,8 @@ export class AppComponent implements OnInit {
     this.handleIncomingMsalToken();
 
     // 2. Validate token against the backend API
-    //this.validateAccessToken();
-    this.validateIdToken();
+    this.validateAccessToken();
+    //this.validateIdToken();
   }
 
   handleIncomingMsalToken(): void {
