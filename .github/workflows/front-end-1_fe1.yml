@@ -61,7 +61,7 @@ jobs:
         with:
           app-name: 'FE1'
           slot-name: 'Production'
-          package: .
+          package: 'dist/tenant-frontend/browser'
       
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -69,5 +69,5 @@ jobs:
         with:
           app-name: 'FE2'
           slot-name: 'Production'
-          package: .
+          package: 'dist/tenant-frontend/browser'
           
