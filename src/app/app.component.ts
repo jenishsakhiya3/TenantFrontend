@@ -16,10 +16,15 @@ export class AppComponent implements OnInit {
   authToken: string | null = null;
   IdToken: string | null = null;
   userEmail: string | null = null;
-  
+
   validateResponse: any = null;
   errorMessage: string | null = null;
   isLoading = false;
+
+  // UI display helpers
+  showTokenPreview = false;
+  backendUrl: string = environment.backendUrl;
+  apiStatusCode: number | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -68,20 +73,23 @@ export class AppComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = null;
+    this.apiStatusCode = null;
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${this.accessToken}`
     });
 
-    this.http.get(`${environment.backendUrl}`, { headers })
+    this.http.get(`${environment.backendUrl}`, { headers, observe: 'response' })
       .subscribe({
-        next: (data: any) => {
+        next: (response: any) => {
           this.isLoading = false;
-          this.validateResponse = data;
-          console.log('Token validated successfully:', data);
+          this.apiStatusCode = response.status;
+          this.validateResponse = response.body;
+          console.log('Token validated successfully:', response.body);
         },
         error: (err) => {
           this.isLoading = false;
+          this.apiStatusCode = err.status || null;
           this.errorMessage = err.error?.message || err.statusText || 'Validation request failed';
           console.error('Validation Error:', err);
         }

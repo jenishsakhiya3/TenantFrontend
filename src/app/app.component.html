@@ -1,4 +1,4 @@
-<div style="padding: 24px; font-family: Arial, sans-serif; max-width: 720px; margin: 0 auto;">
+<div style="padding: 24px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
   <h1 style="color: #1e293b; margin-bottom: 8px;">{{ title }}</h1>
   <p style="color: #64748b; margin-top: 0;">Loaded from Global Portal redirect</p>
 
@@ -6,19 +6,72 @@
   <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
     <h3 style="margin-top: 0; font-size: 16px; color: #334155;">Session Information</h3>
     <p style="margin: 6px 0;"><strong>User Email:</strong> {{ userEmail || 'Not available' }}</p>
+
+    <!-- Access Token Status -->
     <p style="margin: 6px 0;">
-      <strong>Token Captured:</strong>
-      <span *ngIf="authToken" style="color: #16a34a; font-weight: bold;">✔ Yes (in SessionStorage)</span>
-      <span *ngIf="!authToken" style="color: #dc2626; font-weight: bold;">✘ None</span>
+      <strong>Access Token:</strong>
+      <span *ngIf="accessToken" style="color: #16a34a; font-weight: bold;">✔ Present</span>
+      <span *ngIf="!accessToken" style="color: #dc2626; font-weight: bold;">✘ Not found</span>
     </p>
-    <button *ngIf="authToken" (click)="validateAccessToken()" [disabled]="isLoading" style="margin-top: 10px; padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
+
+    <!-- ID Token Status -->
+    <p style="margin: 6px 0;">
+      <strong>ID Token:</strong>
+      <span *ngIf="IdToken" style="color: #16a34a; font-weight: bold;">✔ Present</span>
+      <span *ngIf="!IdToken" style="color: #dc2626; font-weight: bold;">✘ Not found</span>
+    </p>
+
+    <!-- Collapsible Token Preview -->
+    <div *ngIf="accessToken" style="margin-top: 12px;">
+      <button (click)="showTokenPreview = !showTokenPreview"
+        style="padding: 4px 10px; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        {{ showTokenPreview ? 'Hide' : 'Show' }} Token Preview
+      </button>
+      <div *ngIf="showTokenPreview" style="margin-top: 8px;">
+        <p style="margin: 4px 0; font-size: 12px; color: #64748b;"><strong>Access Token (first 40 chars):</strong></p>
+        <code style="background: #0f172a; color: #38bdf8; padding: 6px 10px; border-radius: 4px; font-size: 12px; word-break: break-all; display: block;">
+          {{ accessToken | slice:0:40 }}...
+        </code>
+        <p *ngIf="IdToken" style="margin: 8px 0 4px 0; font-size: 12px; color: #64748b;"><strong>ID Token (first 40 chars):</strong></p>
+        <code *ngIf="IdToken" style="background: #0f172a; color: #38bdf8; padding: 6px 10px; border-radius: 4px; font-size: 12px; word-break: break-all; display: block;">
+          {{ IdToken | slice:0:40 }}...
+        </code>
+      </div>
+    </div>
+
+    <button *ngIf="accessToken" (click)="validateAccessToken()" [disabled]="isLoading"
+      style="margin-top: 12px; padding: 6px 14px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
       {{ isLoading ? 'Validating...' : 'Re-validate Token' }}
     </button>
   </div>
 
+  <!-- API Status Card -->
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+    <h3 style="margin-top: 0; font-size: 16px; color: #334155;">API Status</h3>
+
+    <p style="margin: 6px 0;">
+      <strong>Backend URL:</strong>
+      <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 13px;">{{ backendUrl }}</code>
+    </p>
+
+    <p style="margin: 6px 0;">
+      <strong>Status:</strong>
+      <span *ngIf="isLoading" style="color: #2563eb; font-weight: bold;">⏳ Validating...</span>
+      <span *ngIf="!isLoading && validateResponse" style="color: #16a34a; font-weight: bold;">✔ Connected &amp; Validated</span>
+      <span *ngIf="!isLoading && errorMessage" style="color: #dc2626; font-weight: bold;">✘ Error</span>
+      <span *ngIf="!isLoading && !validateResponse && !errorMessage && !accessToken" style="color: #94a3b8; font-weight: bold;">— No token to validate</span>
+      <span *ngIf="!isLoading && !validateResponse && !errorMessage && accessToken" style="color: #f59e0b; font-weight: bold;">⚠ Pending</span>
+    </p>
+
+    <p *ngIf="apiStatusCode" style="margin: 6px 0;">
+      <strong>HTTP Status:</strong>
+      <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 13px;">{{ apiStatusCode }}</code>
+    </p>
+  </div>
+
   <!-- API Validation Result -->
   <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <h3 style="margin-top: 0; font-size: 16px; color: #334155;">API Validation: /api/auth/validate</h3>
+    <h3 style="margin-top: 0; font-size: 16px; color: #334155;">API Response</h3>
 
     <div *ngIf="isLoading" style="color: #2563eb; padding: 12px 0;">
       Validating token with backend API...
@@ -33,7 +86,7 @@
       <pre style="background: #0f172a; color: #f8fafc; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 13px;">{{ validateResponse | json }}</pre>
     </div>
 
-    <div *ngIf="!isLoading && !errorMessage && !validateResponse && !authToken" style="color: #64748b; padding: 12px 0;">
+    <div *ngIf="!isLoading && !errorMessage && !validateResponse && !accessToken" style="color: #64748b; padding: 12px 0;">
       Waiting for token from portal redirect...
     </div>
   </div>
