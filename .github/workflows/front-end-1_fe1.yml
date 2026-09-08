@@ -29,9 +29,6 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-      - name: Copy generate-env.js to dist output
-        run: copy generate-env.js dist\tenant-frontend\browser\generate-env.js
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -58,6 +55,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5551615AF975457594F095A0880635D7 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_80A383C3CFDC49B3A4E062EC7309F622 }}
 
+      - name: Generate env.js from App Service settings
+        run: |
+          BACKEND_URL=$(az webapp config appsettings list --name FE1 --resource-group RGJenishSakhiya --query "[?name=='BACKEND_URL'].value" -o tsv)
+          echo "(function(window){window.__env=window.__env||{};window.__env.backendUrl='${BACKEND_URL}';})(this);" > dist/tenant-frontend/browser/env.js
+          echo "Backend URL set to: ${BACKEND_URL}"
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
@@ -65,4 +68,3 @@ jobs:
           app-name: 'FE1'
           slot-name: 'Production'
           package: 'dist/tenant-frontend/browser'
-          
