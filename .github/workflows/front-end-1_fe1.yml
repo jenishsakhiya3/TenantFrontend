@@ -28,7 +28,10 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-      
+
+      - name: Copy generate-env.js to dist output
+        run: copy generate-env.js dist\tenant-frontend\browser\generate-env.js
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
