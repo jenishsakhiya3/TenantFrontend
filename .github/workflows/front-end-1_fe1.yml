@@ -61,5 +61,5 @@ jobs:
         with:
           app-name: 'FE1'
           slot-name: 'Production'
-          package: .
+          package: 'dist/tenant-frontend/browser'
           
