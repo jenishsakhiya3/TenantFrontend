@@ -62,6 +62,13 @@ jobs:
           app-name: 'FE1'
           slot-name: 'Production'
           package: 'dist/tenant-frontend/browser'
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E1709E0289614E91BA6F75768BB01262 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_21333B0C89B3469BB7720A2198A3C21E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_85972900D3FE4E64A296A6054C6E1780 }}
       
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
